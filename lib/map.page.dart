@@ -9,8 +9,9 @@ class mapPage extends StatefulWidget {
 class _mapState extends State<mapPage> {
   
   GoogleMapController mapController;
-   double lat = 45.521563;
-   double long = -122.677433;
+  set<Marker> markers = new set<Marker>();
+   double lat = -46.3670213;
+   double long = -23.463579;
 
     void _onMapcreated(GoogleMapController controller) {
       mapController = controller;
@@ -19,13 +20,43 @@ class _mapState extends State<mapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Google Maps"),
+        title: TextFormField(
+          onSubmitted: (val) {
+            lat = -46.3670213;
+            long= -23.463579;
+
+            Latlng position = Latlng (lat ,long);
+            mapController.moveCamera(cameraUpdate.newLatlng(position));
+
+            final Marker marker = Marker(
+              markerId: new MarkerId("12345"),
+              position: position,
+              infoWindow: infoWindow(
+                title: "sua Localização",
+                snippet: 'Itaquaquecetuba/SP',
+              ),
+            );
+            setState(() {
+              markers.add(marker);
+            });
+          }
+        ),
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: latLng(lat, long),
-          zoom: 11.0,
+      body: Container(
+        child: GoogleMap(
+          onMapCreated: _onMapCreated,
+          onCameraMove: (data) {
+            print(data);
+          },
+          onTap: (position) {
+            print(position);
+          }
         )
+        initialCameraPosition: CameraPosition(
+          target: LatLng(lat, long),
+          zoom: 11.0,
+        ),
+        markers: markers,
       ) ,
     );
   }
